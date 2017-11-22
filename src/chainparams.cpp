@@ -344,8 +344,8 @@ public:
         consensus.BIP34Hash = uint256();
         consensus.BIP65Height = 1351; // BIP65 activated on regtest (Used in rpc activation tests)
         consensus.BIP66Height = 1251; // BIP66 activated on regtest (Used in rpc activation tests)
-        consensus.BTGHeight = 100;
-        consensus.BTGPremineWindow = 0;
+        consensus.BTGHeight = 3000;
+        consensus.BTGPremineWindow = 10;
         consensus.BTGPremineEnforceWhitelist = false;
         consensus.BitcoinPostforkBlock = uint256();
         consensus.BitcoinPostforkTime = 0;
@@ -491,29 +491,28 @@ static CScript CltvMultiSigScript(const std::vector<std::string>& pubkeys, uint3
 }
 
 bool CChainParams::IsPremineAddressScript(const CScript& scriptPubKey, uint32_t height) const {
-    return false;
-    // static const int LOCK_TIME = 3 * 365 * 24 * 3600;  // 3 years
-    // static const int LOCK_STAGES = 3 * 12;  // Every month for 3 years
-    // assert((uint32_t)consensus.BTGHeight <= height &&
-    //        height < (uint32_t)(consensus.BTGHeight + consensus.BTGPremineWindow));
+    static const int LOCK_TIME = 3 * 365 * 24 * 3600;  // 3 years
+    static const int LOCK_STAGES = 3 * 12;  // Every month for 3 years
+    assert((uint32_t)consensus.BTGHeight <= height &&
+           height < (uint32_t)(consensus.BTGHeight + consensus.BTGPremineWindow));
     // if (!consensus.BTGPremineEnforceWhitelist) {
-    //      return true;
+    //     return true;
     // }
-    // int block = height - consensus.BTGHeight;
-    // int num_unlocked = consensus.BTGPremineWindow * 40 / 100;  // 40% unlocked.
-    // int num_locked = consensus.BTGPremineWindow - num_unlocked;  // 60% time-locked.
-    // int stage_lock_time = LOCK_TIME / LOCK_STAGES / consensus.nPowTargetSpacing;
-    // int stage_block_height = num_locked / LOCK_STAGES;
-    // const std::vector<std::string> pubkeys = vPreminePubkeys[block % vPreminePubkeys.size()];  // Round robin.
-    // CScript redeem_script;
-    // if (block < num_unlocked) {
-    //     redeem_script = CltvMultiSigScript(pubkeys, 0);
-    // } else {
-    //     int locked_block = block - num_unlocked;
-    //     int stage = locked_block / stage_block_height;
-    //     int lock_time = consensus.BTGHeight + stage_lock_time * (1 + stage);
-    //     redeem_script = CltvMultiSigScript(pubkeys, lock_time);
-    // }
-    // CScript target_scriptPubkey = GetScriptForDestination(CScriptID(redeem_script));
-    // return scriptPubKey == target_scriptPubkey;
+    int block = height - consensus.BTGHeight;
+    int num_unlocked = consensus.BTGPremineWindow * 40 / 100;  // 40% unlocked.
+    int num_locked = consensus.BTGPremineWindow - num_unlocked;  // 60% time-locked.
+    int stage_lock_time = LOCK_TIME / LOCK_STAGES / consensus.nPowTargetSpacing;
+    int stage_block_height = num_locked / LOCK_STAGES;
+    const std::vector<std::string> pubkeys = vPreminePubkeys[block % vPreminePubkeys.size()];  // Round robin.
+    CScript redeem_script;
+    if (block < num_unlocked) {
+        redeem_script = CltvMultiSigScript(pubkeys, 0);
+    } else {
+        int locked_block = block - num_unlocked;
+        int stage = locked_block / stage_block_height;
+        int lock_time = consensus.BTGHeight + stage_lock_time * (1 + stage);
+        redeem_script = CltvMultiSigScript(pubkeys, lock_time);
+    }
+    CScript target_scriptPubkey = GetScriptForDestination(CScriptID(redeem_script));
+    return scriptPubKey == target_scriptPubkey;
 }
