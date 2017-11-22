@@ -103,13 +103,13 @@ public:
         consensus.powLimit = uint256S("0007ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.powLimitStart = uint256S("0000000fffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.powLimitLegacy = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        
+
         //based on https://github.com/BTCGPU/BTCGPU/issues/78
         consensus.nPowAveragingWindow = 30;
         assert(maxUint/UintToArith256(consensus.powLimit) >= consensus.nPowAveragingWindow);
         consensus.nPowMaxAdjustDown = 32;
         consensus.nPowMaxAdjustUp = 16;
-        
+
         consensus.nPowTargetTimespanLegacy = 14 * 24 * 60 * 60;; // 10 minutes
         consensus.nPowTargetSpacing = 10 * 60;
         consensus.fPowAllowMinDifficultyBlocks = false;
@@ -226,13 +226,13 @@ public:
         consensus.powLimit = uint256S("0007ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.powLimitStart = uint256S("0000000fffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.powLimitLegacy = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        
+
         //based on https://github.com/BTCGPU/BTCGPU/issues/78
         consensus.nPowAveragingWindow = 30;
         assert(maxUint/UintToArith256(consensus.powLimit) >= consensus.nPowAveragingWindow);
         consensus.nPowMaxAdjustDown = 32;
         consensus.nPowMaxAdjustUp = 16;
-        
+
         consensus.nPowTargetTimespanLegacy = 14 * 24 * 60 * 60; // two weeks
         consensus.nPowTargetSpacing = 10 * 60;
         consensus.fPowAllowMinDifficultyBlocks = true;
@@ -259,7 +259,7 @@ public:
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x0000000002e9e7b00e1f6dc5123a04aad68dd0f0968d8c7aa45f6640795c37b1"); //1135275
 
-        
+
         pchMessageStartLegacy[0] = 0x0b;
         pchMessageStartLegacy[1] = 0x11;
         pchMessageStartLegacy[2] = 0x09;
@@ -369,7 +369,7 @@ public:
         pchMessageStartLegacy[1] = 0xbf;
         pchMessageStartLegacy[2] = 0xb5;
         pchMessageStartLegacy[3] = 0xda;
-        
+
         pchMessageStart[0] = 0xfa;
         pchMessageStart[1] = 0xbf;
         pchMessageStart[2] = 0xb5;
@@ -378,7 +378,7 @@ public:
         nDefaultPort = 18444;
         nBitcoinDefaultPort = 18444;
         nPruneAfterHeight = 1000;
-        const size_t N = 48, K = 5;
+        const size_t N = 200, K = 9;  // Same as mainchain.
         BOOST_STATIC_ASSERT(equihash_parameters_acceptable(N, K));
         nEquihashN = N;
         nEquihashK = K;
@@ -412,12 +412,12 @@ public:
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
-    
+
         vPremineAddressWhitelist = {
             "2N7eDqMJfmtUPFEZumx81HqN4YKXyD4CmLU",
         };
     }
-    
+
 };
 
 class BitcoinAddressChainParam : public CMainParams
